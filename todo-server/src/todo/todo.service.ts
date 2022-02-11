@@ -1,16 +1,20 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Todo } from 'types';
+import { TodoRepository } from './todo.repository';
 
 @Injectable()
 export class TodoService {
-  todoList: Todo[] = [];
+  constructor(
+    @InjectRepository(TodoRepository) private todoRepository: TodoRepository,
+  ) {}
 
-  getTodoList() {
-    return this.todoList;
+  async getTodoList() {
+    return this.todoRepository.find();
   }
 
-  getTodoById(id: Todo['id']) {
-    const target = this.todoList.find((todo) => todo.id === id);
+  async getTodoById(id: Todo['id']) {
+    const target = await this.todoRepository.findOne(id);
 
     if (!target) {
       throw new NotFoundException(`대상 Todo가 없습니다 - id : ${id}`);
@@ -20,33 +24,28 @@ export class TodoService {
   }
 
   async createTodo(title: string) {
-    const newId = this.createTodoId();
-    const newTodo = { title, id: newId, completed: false };
-    this.todoList.push(newTodo);
+    const newTodo = this.todoRepository.create({
+      title,
+      completed: false,
+    });
+    await this.todoRepository.save(newTodo);
     return newTodo;
   }
 
   async deleteTodoById(id: Todo['id']) {
-    this.todoList = this.todoList.filter((todo) => todo.id !== id);
+    await this.todoRepository.delete(id);
   }
 
   async updateTodo(todo: Todo) {
-    const targetIndex = this.todoList.findIndex(({ id }) => todo.id === id);
-
-    if (!targetIndex) {
+    const target = await this.getTodoById(todo.id);
+    if (!target) {
       throw new NotFoundException(
         `대상 TODO가 없습니다. title - ${todo.title} / id - ${todo.id}`,
       );
     }
 
-    this.todoList[targetIndex] = todo;
-  }
-
-  private createTodoId() {
-    const IdList = [...this.todoList.map(({ id }) => id)];
-
-    const maxId = Math.max() || 0;
-    console.log('maxid', maxId);
-    return maxId + 1;
+    const fixedTodo = { ...target, ...todo };
+    await this.todoRepository.save(fixedTodo);
+    return fixedTodo;
   }
 }

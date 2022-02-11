@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { typeORMConfig } from './config/typeorm.config';
 import { TodoModule } from './todo/todo.module';
 
 @Module({
-  imports: [TodoModule],
+  imports: [TypeOrmModule.forRoot(typeORMConfig), TodoModule],
   controllers: [AppController],
   providers: [AppService],
 })

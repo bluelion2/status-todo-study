@@ -6,6 +6,7 @@ import {
   Put,
   Param,
   Body,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { Todo } from 'types';
 import { TodoService } from './todo.service';
@@ -20,7 +21,7 @@ export class TodoController {
   }
 
   @Get('/:id')
-  async getTodoById(@Param() id: Todo['id']) {
+  async getTodoById(@Param('id', ParseIntPipe) id: Todo['id']) {
     return this.todoService.getTodoById(id);
   }
 
@@ -29,13 +30,13 @@ export class TodoController {
     return this.todoService.createTodo(title);
   }
 
-  @Delete('/id')
-  async deleteTodoById(@Param() id: Todo['id']) {
-    this.todoService.deleteTodoById(id);
+  @Delete('/:id')
+  async deleteTodoById(@Param('id', ParseIntPipe) id: Todo['id']) {
+    return this.todoService.deleteTodoById(id);
   }
 
   @Put('/:id')
   async updateTodo(@Body() todo: Todo) {
-    this.todoService.updateTodo(todo);
+    return this.todoService.updateTodo(todo);
   }
 }
