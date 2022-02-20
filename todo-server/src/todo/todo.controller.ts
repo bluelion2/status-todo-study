@@ -8,7 +8,7 @@ import {
   Body,
   ParseIntPipe,
 } from '@nestjs/common';
-import { Todo } from 'types';
+import { Todo } from 'src/entity/todo.entity';
 import { TodoService } from './todo.service';
 
 @Controller('todo')
