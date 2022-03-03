@@ -32,6 +32,9 @@ module.exports = {
       template: './public/index.html'
     })
   ],
+  resolve: {
+    extensions: ['.js', '.ts', '.tsx']
+  },
   output: {
     path: path.resolve(__dirname, './dist'),
     filename: '[hash].js'

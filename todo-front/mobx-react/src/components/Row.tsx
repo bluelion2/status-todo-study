@@ -7,8 +7,6 @@ type Props = {
 };
 
 function Row({ todo }: Props) {
-  console.log('toido', todo);
-
   const deleteTodo = () => {
     const ok = confirm('정말 지우시는건가요?');
     if (ok) {
